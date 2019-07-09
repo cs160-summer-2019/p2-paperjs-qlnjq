@@ -1,5 +1,5 @@
 {% load static %}
-
+<!-- http://p2-paperjs-qlnjq-jach866608.codeanyapp.com:8000/coloring/?type=gradient -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -59,14 +59,39 @@
 			// you may also add code outside of the function (e.g., global variables)
 			function myGradientInteraction(){
 				var tool = new paper.Tool();
-
-				tool.onMouseDown = function (event) {
-
+        
+        var topLeft = new paper.Point(250, 300);//paper.view.center - 80;
+        var bottomRight = new paper.Point(458, 410);;//paper.view.center + 80;
+//         var rectSize = new paper.Size(200,100);
+        var rect = new paper.Path.Rectangle(topLeft, bottomRight);
+        rect.fillColor = 'red';
+        var origColor, destColor, mousedownPoint, mouseupPoint;
+        
+				tool.onMouseDown = function (event) { // second-last color
+          if (rect.contains(event.point)){
+            if (cp.history.length >= 1){
+              origColor = cp.history[cp.history.length-2];
+            } else {
+              origColor = cp.history[0];
+            }
+            mousedownPoint = event.downPoint;
+          }
 				}
 
-				tool.onMouseUp = function (event) {
-					
-				}
+				tool.onMouseUp = function (event) { // last-color
+          if (rect.contains(event.point)) {
+            destColor = cp.history[cp.history.length-1];
+            mouseupPoint = event.point;
+            
+            rect.fillColor = {
+              gradient: {
+                  stops: [origColor, destColor]
+              },
+              origin: mousedownPoint,
+              destination: mouseupPoint,
+            };
+          }
+        }
 			}
 
 			// your custom interaction goes here!
